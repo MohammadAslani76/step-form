@@ -1,0 +1,21 @@
+@font-face {
+    font-family: "vazir";
+    src: url("assets/vazir/vazir.eot");
+    src: url("assets/vazir/vazir.eot?#iefix") format("embedded-opentype"),
+    url("assets/vazir/vazir.woff") format("woff"),
+    url("assets/vazir/vazir.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+*{
+    box-sizing: border-box;
+    font-family: "vazir",sans-serif ;
+    text-decoration: none;
+}
+body{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
