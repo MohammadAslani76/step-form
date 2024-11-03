@@ -39,6 +39,14 @@ const FormContainer = () => {
 
     const [activeStep, setActiveStep] = useState(0);
     const [openAlert,setOpenAlert] = useState(false)
+    const [formData,setFormData] = useState({
+        name: "",
+        family: "",
+        age: "",
+        gender: "0",
+        nationalCode: "",
+        fatherName : ""
+    })
 
     const handleNext = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -54,7 +62,7 @@ const FormContainer = () => {
     const handleReset = () => {
         setActiveStep(0);
     };
-
+    console.log(formData)
     return (
         <Box sx={{minHeight: "100vh",backgroundColor: "background.paper", p:2}}>
             <Container maxWidth="xl">
@@ -86,7 +94,7 @@ const FormContainer = () => {
                         </>
                     ) : (
                         <>
-                            {activeStep === 0 && <PersonalInformation/>}
+                            {activeStep === 0 && <PersonalInformation formData={formData} setFormData={setFormData}/>}
                             {activeStep === 1 && <AdditionalInformation/>}
                             {activeStep === 2 && <CheckInformation/>}
                             <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
