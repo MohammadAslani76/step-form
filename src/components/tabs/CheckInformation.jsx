@@ -59,13 +59,11 @@ const CheckInformation = ({formData}) => {
                         <Typography color="text.primary">{formData.city}</Typography>
                     </Stack>
                 </Grid>
-                <Grid size={{xs: 12, sm: 6, md: 4}}>
-                    <Stack direction="row" alignItems="center" spacing={1}>
-                        <Typography color="text.secondary">آدرس:</Typography>
-                        <Typography color="text.primary">{formData.address}</Typography>
-                    </Stack>
-                </Grid>
             </Grid>
+            <Stack direction="row" alignItems="center" spacing={1} mt={2}>
+                <Typography color="text.secondary">آدرس:</Typography>
+                <Typography color="text.primary">{formData.address}</Typography>
+            </Stack>
         </Box>
     );
 };
