@@ -6,19 +6,23 @@ const FinishAlert = ({openAlert,setOpenAlert}) => {
         if (reason === 'clickaway') {
             return;
         }
-        setOpenAlert(false);
+        setOpenAlert({
+            active: false,
+            text: "",
+            status: ""
+        });
     };
 
     return (
-        <Snackbar open={openAlert} autoHideDuration={2000}
+        <Snackbar open={openAlert.active} autoHideDuration={2000}
                   onClose={handleCloseAlert}>
             <Alert
                 onClose={handleCloseAlert}
-                severity="success"
+                severity={openAlert.status}
                 variant="filled"
                 sx={{ width: '100%' }}
             >
-                ثبت نام با موفقیت انجام شد
+                {openAlert.text}
             </Alert>
         </Snackbar>
     );

@@ -20,6 +20,25 @@ import {GrPowerReset} from "react-icons/gr";
 
 const steps = ['اطلاعات شخصی', 'اطلاعات تکمیلی', 'مشاهده اطلاعات'];
 
+const initialFormData = {
+    name: "",
+    family: "",
+    age: "",
+    gender: "0",
+    nationalCode: "",
+    fatherName : "",
+    phoneNumber: "",
+    email: "",
+    city: "",
+    address: ""
+}
+
+const initialAlertData = {
+    active: false,
+    text: "",
+    status: ""
+}
+
 const FormContainer = () => {
 
     const theme = useTheme();
@@ -38,20 +57,31 @@ const FormContainer = () => {
     }
 
     const [activeStep, setActiveStep] = useState(0);
-    const [openAlert,setOpenAlert] = useState(false)
-    const [formData,setFormData] = useState({
-        name: "",
-        family: "",
-        age: "",
-        gender: "0",
-        nationalCode: "",
-        fatherName : ""
-    })
+    const [openAlert,setOpenAlert] = useState(initialAlertData)
+    const [formData,setFormData] = useState(initialFormData)
 
     const handleNext = () => {
+        if (activeStep === 0 && (formData.name === "" || formData.family === "" || formData.age === "" || formData.age < 1 || formData.fatherName === "")){
+            return setOpenAlert({
+                active: true,
+                text: "لطفا اطلاعات را کامل و صحیح وارد نمایید",
+                status: "error"
+            })
+        }
+        if (activeStep === 1 && (formData.phoneNumber === "" || formData.city === "" || formData.address === "")){
+            return setOpenAlert({
+                active: true,
+                text: "لطفا اطلاعات را کامل و صحیح وارد نمایید",
+                status: "error"
+            })
+        }
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
         if (activeStep === steps.length - 1){
-            setOpenAlert(true)
+            setOpenAlert({
+                active: true,
+                text: "ثبت نام با موفقیت انجام شد",
+                status: "success"
+            })
         }
     };
 
@@ -61,8 +91,9 @@ const FormContainer = () => {
 
     const handleReset = () => {
         setActiveStep(0);
+        setFormData(initialFormData)
     };
-    console.log(formData)
+
     return (
         <Box sx={{minHeight: "100vh",backgroundColor: "background.paper", p:2}}>
             <Container maxWidth="xl">
@@ -95,8 +126,8 @@ const FormContainer = () => {
                     ) : (
                         <>
                             {activeStep === 0 && <PersonalInformation formData={formData} setFormData={setFormData}/>}
-                            {activeStep === 1 && <AdditionalInformation/>}
-                            {activeStep === 2 && <CheckInformation/>}
+                            {activeStep === 1 && <AdditionalInformation formData={formData} setFormData={setFormData}/>}
+                            {activeStep === 2 && <CheckInformation formData={formData}/>}
                             <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                                 <Button
                                     color="primary"
