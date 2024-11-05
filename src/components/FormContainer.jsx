@@ -16,7 +16,8 @@ import {FaAngleLeft, FaAngleRight, FaCheck} from "react-icons/fa6";
 import PersonalInformation from "./tabs/PersonalInformation.jsx";
 import AdditionalInformation from "./tabs/AdditionalInformation.jsx";
 import CheckInformation from "./tabs/CheckInformation.jsx";
-import {GrPowerReset} from "react-icons/gr";
+import * as Yup from "yup";
+import {useFormik} from "formik";
 
 const steps = ['اطلاعات شخصی', 'اطلاعات تکمیلی', 'مشاهده اطلاعات'];
 
@@ -26,7 +27,7 @@ const initialFormData = {
     age: "",
     gender: "0",
     nationalCode: "",
-    fatherName : "",
+    fatherName: "",
     phoneNumber: "",
     email: "",
     city: "",
@@ -45,30 +46,57 @@ const FormContainer = () => {
     const smSize = useMediaQuery(theme.breakpoints.down('sm'));
 
     const boxStyle = {
-        width:{
+        width: {
             xs: "100%",
             lg: "70%"
         },
         mx: "auto",
         p: 2,
-        borderRadius : "5px",
+        borderRadius: "5px",
         backgroundColor: theme.palette.mode === "dark" ? grey[900] : grey[200],
         boxShadow: `2px 2px 5px ${theme.palette.mode === "dark" ? "#343333" : "#858585"}`
     }
 
     const [activeStep, setActiveStep] = useState(0);
-    const [openAlert,setOpenAlert] = useState(initialAlertData)
-    const [formData,setFormData] = useState(initialFormData)
+    const [openAlert, setOpenAlert] = useState(initialAlertData)
+
+    const formValidationSchema = Yup.object({
+        name: Yup.string().max(30, "بیشتر از 30 کاراکتر وارد نکنید").required("وارد کردن نام اجباری است"),
+        family: Yup.string().max(30, "بیشتر از 30 کاراکتر وارد نکنید").required("وارد کردن نام خانوادگی اجباری است"),
+        age: Yup.number().min(1, "سن وارد شده اشتباه است").max(999, "سن وارد شده اشتباه است").required("وارد کردن سن اجباری است"),
+        nationalCode: Yup.number().min(1000000000, "تعداد ارقام کدملی صحیح نمی باشد").max(9999999999, "تعداد ارقام کدملی صحیح نمی باشد")
+            .required("وارد کردن کدملی اجباری است"),
+        fatherName: Yup.string().max(30, "بیشتر از 30 کاراکتر وارد نکنید").required("وارد کردن نام پدر اجباری است"),
+        phoneNumber: Yup.number().required("وارد کردن شماره تلفن اجباری است"),
+        email: Yup.string().email("ایمیل وارد شده صحیح نمی باشد"),
+        city: Yup.string().max(30, "بیشتر از 30 کاراکتر وارد نکنید").required("وارد کردن شهر اجباری است"),
+        address: Yup.string().min(5, "حداقل 5 کاراکتر وارد نمایید").required("وارد کردن آدرس اجباری است")
+    })
+
+    const formik = useFormik({
+        initialValues: initialFormData,
+        onSubmit: async (values) => {
+            console.log("Send data to API",values)
+            // Call API and if result is true this is final result
+            setOpenAlert({
+                active: true,
+                text: "ثبت نام با موفقیت انجام شد",
+                status: "success"
+            })
+            setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        },
+        validationSchema: formValidationSchema
+    })
 
     const handleNext = () => {
-        if (activeStep === 0 && (formData.name === "" || formData.family === "" || formData.age === "" || formData.age < 1 || formData.fatherName === "")){
+        if (activeStep === 0 && (formik.values.name === "" || formik.values.family === "" || formik.values.age === "" || formik.values.age < 1 || formik.values.fatherName === "")) {
             return setOpenAlert({
                 active: true,
                 text: "لطفا اطلاعات را کامل و صحیح وارد نمایید",
                 status: "error"
             })
         }
-        if (activeStep === 1 && (formData.phoneNumber === "" || formData.city === "" || formData.address === "")){
+        if (activeStep === 1 && (formik.values.phoneNumber === "" || formik.values.city === "" || formik.values.address === "")) {
             return setOpenAlert({
                 active: true,
                 text: "لطفا اطلاعات را کامل و صحیح وارد نمایید",
@@ -76,26 +104,14 @@ const FormContainer = () => {
             })
         }
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
-        if (activeStep === steps.length - 1){
-            setOpenAlert({
-                active: true,
-                text: "ثبت نام با موفقیت انجام شد",
-                status: "success"
-            })
-        }
     };
 
     const handleBack = () => {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
 
-    const handleReset = () => {
-        setActiveStep(0);
-        setFormData(initialFormData)
-    };
-
     return (
-        <Box sx={{minHeight: "100vh",backgroundColor: "background.paper", p:2}}>
+        <Box sx={{minHeight: "100vh", backgroundColor: "background.paper", p: 2}}>
             <Container maxWidth="xl">
                 <DarkLight/>
                 <Box sx={boxStyle}>
@@ -111,36 +127,33 @@ const FormContainer = () => {
                     {activeStep === steps.length ? (
                         <>
                             <Typography textAlign="center" color="success"
-                                        sx={{ mt: 2, mb: 1 }}>
+                                        sx={{mt: 2, mb: 1}}>
                                 ثبت نام شما با موفقیت به اتمام رسید
                             </Typography>
-                            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-                                <Box sx={{ flex: '1 1 auto' }} />
-                                <Button startIcon={<GrPowerReset />}
-                                        variant="outlined"
-                                        onClick={handleReset}>
-                                    از ابتدا شروع کن
-                                </Button>
-                            </Box>
                         </>
                     ) : (
                         <>
-                            {activeStep === 0 && <PersonalInformation formData={formData} setFormData={setFormData}/>}
-                            {activeStep === 1 && <AdditionalInformation formData={formData} setFormData={setFormData}/>}
-                            {activeStep === 2 && <CheckInformation formData={formData}/>}
-                            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-                                <Button
-                                    color="primary"
-                                    disabled={activeStep === 0}
-                                    startIcon={<FaAngleRight size={12}/>}
-                                    onClick={handleBack}>
+                            {activeStep === 0 && <PersonalInformation formik={formik}/>}
+                            {activeStep === 1 && <AdditionalInformation formik={formik}/>}
+                            {activeStep === 2 && <CheckInformation formik={formik}/>}
+                            <Box sx={{display: 'flex', flexDirection: 'row', pt: 2}}>
+                                <Button type="button"
+                                        color="primary"
+                                        disabled={activeStep === 0}
+                                        startIcon={<FaAngleRight size={12}/>}
+                                        onClick={handleBack}>
                                     قبلی
                                 </Button>
-                                <Box sx={{ flex: '1 1 auto' }} />
-                                <Button endIcon={activeStep === steps.length - 1 ? <FaCheck size={12}/> : <FaAngleLeft size={12}/>}
+                                <Box sx={{flex: '1 1 auto'}}/>
+                                {
+
+                                }
+                                <Button endIcon={activeStep === steps.length - 1 ? <FaCheck size={12}/> :
+                                    <FaAngleLeft size={12}/>}
                                         color={activeStep === steps.length - 1 ? "success" : "primary"}
                                         variant={activeStep === steps.length - 1 ? "outlined" : "text"}
-                                        onClick={handleNext}>
+                                        onClick={activeStep === steps.length - 1 ? formik.handleSubmit : handleNext}
+                                        type={activeStep === steps.length - 1 ? "submit" : "button"}>
                                     {activeStep === steps.length - 1 ? 'ثبت نهایی' : 'بعدی'}
                                 </Button>
                             </Box>
