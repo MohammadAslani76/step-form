@@ -76,14 +76,18 @@ const FormContainer = () => {
     })
 
     const handleNext = () => {
-        if (activeStep === 0 && (formik.values.name === "" || formik.values.family === "" || formik.values.age === "" || formik.values.age < 1 || formik.values.fatherName === "")) {
+        if (activeStep === 0 && (Boolean(formik.errors.name) || Boolean(formik.errors.family) || Boolean(formik.errors.age)
+            || Boolean(formik.errors.fatherName) || Boolean(formik.errors.nationalCode)
+            || formik.values.name === "" || formik.values.family === "" || formik.values.age === ""
+            || formik.values.fatherName === "" || formik.values.nationalCode === "")) {
             return setOpenAlert({
                 active: true,
                 text: "لطفا اطلاعات را کامل و صحیح وارد نمایید",
                 status: "error"
             })
         }
-        if (activeStep === 1 && (formik.values.phoneNumber === "" || formik.values.city === "" || formik.values.address === "")) {
+        if (activeStep === 1 && (Boolean(formik.errors.phoneNumber) || Boolean(formik.errors.city) || Boolean(formik.errors.address) || Boolean(formik.errors.email)
+            || formik.values.phoneNumber === "" || formik.values.city === "" || formik.values.address === "")) {
             return setOpenAlert({
                 active: true,
                 text: "لطفا اطلاعات را کامل و صحیح وارد نمایید",
